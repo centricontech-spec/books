@@ -1,36 +1,41 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MANA GLOBAL website
 
-## Getting Started
+New website for www.mana-global.com (Robin Terry). Next.js App Router, Tailwind CSS, built as a **static export** for the Crazy Domains cPanel hosting.
 
-First, run the development server:
+## Run it
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev        # http://localhost:3000
+npm run build      # writes the finished site to out/
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Put it live
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. In cPanel File Manager, download a backup of `public_html`.
+2. Delete the old site files in `public_html` (keep `.well-known/` and `cgi-bin/`).
+3. Upload everything **inside** `out/` into `public_html`, including the hidden `.htaccess`.
+4. Open https://www.mana-global.com and click through a few countries.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Where things are
 
-## Learn More
+| What | File |
+|---|---|
+| Prices, order email, Stripe Payment Links | `src/data/shop.ts` |
+| Country editions (name, language, flag, manuscript pages) | `src/data/editions.ts` |
+| Book covers (black / colour / white per edition) | `public/covers/` |
+| Online reader pages (from the Final Manuscript PDF) | `public/reader/page-001.jpg` … `page-313.jpg` |
+| Flags | `public/flags/` |
+| Author photo and globe | `public/img/` |
 
-To learn more about Next.js, take a look at the following resources:
+### Taking payments
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Buy buttons open an order email to robinterry@mana-global.com until a Stripe Payment Link is pasted into `paymentLink` in `src/data/shop.ts`. Create one link per product in the Stripe dashboard, rebuild and re-upload.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Pages
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `/` home: slogans, countries with flags, author panel
+- `/countries/` about MANA GLOBAL and every edition with its flag
+- `/books/` all covers; `/books/<edition>/` the 4 books for that edition (black, colour, white soft covers and Global Edition hard cover), plus Video and E-Book
+- `/read/<edition>/` read the edition online; `/read/global-edition/` the whole manuscript
+- `/videos/`, `/ebook/`, `/profile/`
