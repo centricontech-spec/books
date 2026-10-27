@@ -3,6 +3,7 @@ import Link from "next/link";
 import AuthorPanel from "@/components/AuthorPanel";
 import CountryTile from "@/components/CountryTile";
 import { countries, editions } from "@/data/editions";
+import { GLOBAL_EDITION_YEAR } from "@/data/shop";
 
 export default function Home() {
   return (
@@ -26,7 +27,7 @@ export default function Home() {
                 Choose your country
               </a>
               <Link href="/read/global-edition/" className="rounded border-2 border-gold px-6 py-3 font-heading font-semibold uppercase tracking-wider text-gold hover:bg-gold hover:text-black">
-                Read the Global Edition
+                Read the Global Edition {GLOBAL_EDITION_YEAR}
               </Link>
             </div>
           </div>

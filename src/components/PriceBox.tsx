@@ -1,4 +1,4 @@
-import { formatPrice, FREE_POSTAGE, products } from "@/data/shop";
+import { formatPrice, FREE_POSTAGE, GLOBAL_EDITION_YEAR, products } from "@/data/shop";
 
 export default function PriceBox() {
   return (
@@ -7,7 +7,7 @@ export default function PriceBox() {
         <tbody>
           {products.map((p) => (
             <tr key={p.id}>
-              <td className="py-1.5 pr-4">{p.id === "hardcover" ? "Hard cover" : p.name}</td>
+              <td className="py-1.5 pr-4">{p.id === "hardcover" ? `Hard cover (Global Edition ${GLOBAL_EDITION_YEAR})` : p.name}</td>
               <td className="py-1.5 text-right">{formatPrice(p.price)}</td>
             </tr>
           ))}

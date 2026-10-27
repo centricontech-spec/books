@@ -10,19 +10,17 @@ export default function CountryTile({ country }: { country: Country }) {
         <Flag code={country.flag} label={country.name} className="w-14" />
         <span className="font-heading text-sm uppercase tracking-wider text-white">{country.name}</span>
       </Link>
-      {country.editions.length > 1 && (
-        <div className="flex flex-wrap justify-center gap-1 bg-black/25 px-2 py-2">
-          {country.editions.map((e) => (
-            <Link
-              key={e.slug}
-              href={`/books/${e.slug}/`}
-              className="rounded bg-black/40 px-2 py-0.5 text-xs text-gold hover:bg-gold hover:text-black"
-            >
-              {e.language}
-            </Link>
-          ))}
-        </div>
-      )}
+      <div className="flex min-h-10 flex-wrap items-center justify-center gap-1 bg-black/25 px-2 py-2">
+        {country.editions.map((e) => (
+          <Link
+            key={e.slug}
+            href={`/books/${e.slug}/`}
+            className="rounded bg-black/40 px-2 py-0.5 text-xs text-gold hover:bg-gold hover:text-black"
+          >
+            {e.language}
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }

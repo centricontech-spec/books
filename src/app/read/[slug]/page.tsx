@@ -2,9 +2,13 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import BuyButton from "@/components/BuyButton";
-import { editions, editionTitle, getEdition, MANUSCRIPT_PAGES } from "@/data/editions";
-import { getProduct } from "@/data/shop";
+import Cover from "@/components/Cover";
+import EditionCover from "@/components/EditionCover";
+import ReaderCover from "@/components/ReaderCover";
+import { editions, editionTitle, getEdition, BLANK_PAGES, GLOBAL_BACK_COVER, globalCoverSrc, MANUSCRIPT_PAGES, type Edition } from "@/data/editions";
+import { getProduct, GLOBAL_EDITION_YEAR } from "@/data/shop";
 
 const GLOBAL = "global-edition";
 
@@ -15,10 +19,22 @@ export function generateStaticParams() {
 }
 
 function resolve(slug: string) {
-  if (slug === GLOBAL) return { title: "Global Edition", from: 1, to: MANUSCRIPT_PAGES, edition: undefined };
+  if (slug === GLOBAL) return { title: `Global Edition ${GLOBAL_EDITION_YEAR}`, from: 1, to: MANUSCRIPT_PAGES, edition: undefined };
   const edition = getEdition(slug);
   if (!edition) return undefined;
   return { title: `${edition.country} · ${edition.language}`, from: edition.pages[0], to: edition.pages[1], edition };
+}
+
+function BookCover({ edition, side, title }: { edition?: Edition; side: "front" | "back"; title: string }) {
+  if (!edition) {
+    const src = side === "front" ? globalCoverSrc() : GLOBAL_BACK_COVER;
+    return <Cover src={src} alt={`${title} ${side} cover`} priority={side === "front"} />;
+  }
+  return (
+    <Suspense fallback={<EditionCover edition={edition} variant="colour" side={side} />}>
+      <ReaderCover edition={edition} side={side} />
+    </Suspense>
+  );
 }
 
 export async function generateMetadata({ params }: PageProps<"/read/[slug]">): Promise<Metadata> {
@@ -34,7 +50,7 @@ export default async function ReaderPage({ params }: PageProps<"/read/[slug]">) 
   const { slug } = await params;
   const book = resolve(slug);
   if (!book) notFound();
-  const pages = Array.from({ length: book.to - book.from + 1 }, (_, i) => book.from + i);
+  const pages = Array.from({ length: book.to - book.from + 1 }, (_, i) => book.from + i).filter((p) => !BLANK_PAGES.includes(p));
   const name = book.edition ? editionTitle(book.edition) : undefined;
 
   return (
@@ -52,6 +68,9 @@ export default async function ReaderPage({ params }: PageProps<"/read/[slug]">) 
 
       <div className="grid gap-8 lg:grid-cols-[1fr_260px]">
         <div className="space-y-6">
+          <figure id="cover" className="mx-auto max-w-[560px]">
+            <BookCover edition={book.edition} side="front" title={book.title} />
+          </figure>
           {pages.map((p) => (
             <figure key={p} id={`page-${p}`} className="mx-auto max-w-[760px] bg-white shadow-xl shadow-black/60">
               <Image
@@ -60,10 +79,12 @@ export default async function ReaderPage({ params }: PageProps<"/read/[slug]">) 
                 width={900}
                 height={1345}
                 className="h-auto w-full"
-                priority={p === book.from}
               />
             </figure>
           ))}
+          <figure id="back-cover" className="mx-auto max-w-[560px]">
+            <BookCover edition={book.edition} side="back" title={book.title} />
+          </figure>
         </div>
 
         <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
@@ -76,7 +97,7 @@ export default async function ReaderPage({ params }: PageProps<"/read/[slug]">) 
               <BuyButton product={getProduct("video")} detail={name} label="Video App" className="w-full" />
             </>
           ) : null}
-          <BuyButton product={getProduct("hardcover")} label="Global Edition hard cover" className="w-full" />
+          <BuyButton product={getProduct("hardcover")} label={`Global Edition ${GLOBAL_EDITION_YEAR}`} className="w-full" />
           <p className="pt-2 text-center text-sm text-gold">FREE Postage</p>
           {!book.edition && (
             <nav className="max-h-[40vh] overflow-y-auto rounded border border-white/10 p-3 text-sm">

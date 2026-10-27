@@ -23,8 +23,10 @@ npm run build      # writes the finished site to out/
 |---|---|
 | Prices, order email, Stripe Payment Links | `src/data/shop.ts` |
 | Country editions (name, language, flag, manuscript pages) | `src/data/editions.ts` |
-| Book covers (black / colour / white per edition) | `public/covers/` |
-| Online reader pages (from the Final Manuscript PDF) | `public/reader/page-001.jpg` … `page-313.jpg` |
+| Book covers (black / colour / white per edition, front and `-back`), all 600 × 750 px; the reader opens on the cover clicked (`/read/<edition>/?cover=black`) and ends on its back cover | `public/covers/` (editions with no artwork yet show a "cover coming soon" stand-in; add the three JPGs and set `hasCovers: true`) |
+| Global Edition year | `GLOBAL_EDITION_YEAR` in `src/data/shop.ts` |
+| Global Edition cover in an edition's language | add `public/covers/<edition>-global.jpg`, list the edition in `globalCoversInLanguage` in `src/data/editions.ts` |
+| Online reader pages (from the Final Manuscript PDF) | `public/reader/page-001.jpg` … `page-311.jpg`; blank print pages listed in `BLANK_PAGES` are skipped |
 | Flags | `public/flags/` |
 | Author photo and globe | `public/img/` |
 

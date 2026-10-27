@@ -41,7 +41,7 @@ export default function CountriesPage() {
       </section>
 
       <section className="rounded bg-tile/40 p-4">
-        <h2 className="mb-4 font-heading text-xl uppercase tracking-wider text-gold">{editions.length} editions</h2>
+        <h2 className="mb-4 font-heading text-xl uppercase tracking-wider text-gold">Choose your edition</h2>
         <ul className="divide-y divide-white/10">
           {editions.map((e) => (
             <li key={e.slug}>
