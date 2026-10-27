@@ -2,12 +2,14 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
+import { Fragment, Suspense } from "react";
 import BuyButton from "@/components/BuyButton";
 import Cover from "@/components/Cover";
 import EditionCover from "@/components/EditionCover";
+import EditorialReviewPage from "@/components/EditorialReviewPage";
 import ReaderCover from "@/components/ReaderCover";
 import { editions, editionTitle, getEdition, BLANK_PAGES, GLOBAL_BACK_COVER, globalCoverSrc, MANUSCRIPT_PAGES, type Edition } from "@/data/editions";
+import { EDITORIAL_REVIEW } from "@/data/editorialReview";
 import { getProduct, GLOBAL_EDITION_YEAR } from "@/data/shop";
 
 const GLOBAL = "global-edition";
@@ -19,10 +21,11 @@ export function generateStaticParams() {
 }
 
 function resolve(slug: string) {
-  if (slug === GLOBAL) return { title: `Global Edition ${GLOBAL_EDITION_YEAR}`, from: 1, to: MANUSCRIPT_PAGES, edition: undefined };
+  // The Global Edition holds the black and white manuscript; the soft cover editions show their pages in colour.
+  if (slug === GLOBAL) return { title: `Global Edition ${GLOBAL_EDITION_YEAR}`, from: 1, to: MANUSCRIPT_PAGES, dir: "reader", edition: undefined };
   const edition = getEdition(slug);
   if (!edition) return undefined;
-  return { title: `${edition.country} · ${edition.language}`, from: edition.pages[0], to: edition.pages[1], edition };
+  return { title: `${edition.country} · ${edition.language}`, from: edition.colourPages[0], to: edition.colourPages[1], dir: "reader-colour", edition };
 }
 
 function BookCover({ edition, side, title }: { edition?: Edition; side: "front" | "back"; title: string }) {
@@ -50,8 +53,9 @@ export default async function ReaderPage({ params }: PageProps<"/read/[slug]">) 
   const { slug } = await params;
   const book = resolve(slug);
   if (!book) notFound();
-  const pages = Array.from({ length: book.to - book.from + 1 }, (_, i) => book.from + i).filter((p) => !BLANK_PAGES.includes(p));
+  const pages = Array.from({ length: book.to - book.from + 1 }, (_, i) => book.from + i).filter((p) => book.dir !== "reader" || !BLANK_PAGES.includes(p));
   const name = book.edition ? editionTitle(book.edition) : undefined;
+  const hasEditorialReview = !book.edition;
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
@@ -59,7 +63,7 @@ export default async function ReaderPage({ params }: PageProps<"/read/[slug]">) 
         <div>
           <p className="font-heading text-sm uppercase tracking-wider text-white/60">Read online</p>
           <h1 className="font-heading text-3xl uppercase tracking-wider text-gold">{book.title}</h1>
-          <p className="text-sm text-white/60">{pages.length} pages</p>
+          <p className="text-sm text-white/60">{pages.length + (hasEditorialReview ? 1 : 0)} pages</p>
         </div>
         <Link href={book.edition ? `/books/${book.edition.slug}/` : "/books/"} className="text-gold underline-offset-4 hover:underline">
           ← Back to the books
@@ -72,15 +76,22 @@ export default async function ReaderPage({ params }: PageProps<"/read/[slug]">) 
             <BookCover edition={book.edition} side="front" title={book.title} />
           </figure>
           {pages.map((p) => (
-            <figure key={p} id={`page-${p}`} className="mx-auto max-w-[760px] bg-white shadow-xl shadow-black/60">
-              <Image
-                src={`/reader/page-${String(p).padStart(3, "0")}.jpg`}
-                alt={`${book.title}, page ${p}`}
-                width={900}
-                height={1345}
-                className="h-auto w-full"
-              />
-            </figure>
+            <Fragment key={p}>
+              <figure id={`page-${p}`} className="mx-auto max-w-[760px] bg-white shadow-xl shadow-black/60">
+                <Image
+                  src={`/${book.dir}/page-${String(p).padStart(3, "0")}.jpg`}
+                  alt={`${book.title}, page ${p}`}
+                  width={900}
+                  height={1345}
+                  className="h-auto w-full"
+                />
+              </figure>
+              {hasEditorialReview && p === EDITORIAL_REVIEW.afterPage && (
+                <figure id="editorial-review" className="mx-auto max-w-[760px] shadow-xl shadow-black/60">
+                  <EditorialReviewPage />
+                </figure>
+              )}
+            </Fragment>
           ))}
           <figure id="back-cover" className="mx-auto max-w-[560px]">
             <BookCover edition={book.edition} side="back" title={book.title} />
