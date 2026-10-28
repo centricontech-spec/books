@@ -21,11 +21,10 @@ export function generateStaticParams() {
 }
 
 function resolve(slug: string) {
-  // The Global Edition holds the black and white manuscript; the soft cover editions show their pages in colour.
-  if (slug === GLOBAL) return { title: `Global Edition ${GLOBAL_EDITION_YEAR}`, from: 1, to: MANUSCRIPT_PAGES, dir: "reader", edition: undefined };
+  if (slug === GLOBAL) return { title: `Global Edition ${GLOBAL_EDITION_YEAR}`, from: 1, to: MANUSCRIPT_PAGES, edition: undefined };
   const edition = getEdition(slug);
   if (!edition) return undefined;
-  return { title: `${edition.country} · ${edition.language}`, from: edition.colourPages[0], to: edition.colourPages[1], dir: "reader-colour", edition };
+  return { title: `${edition.country} · ${edition.language}`, from: edition.pages[0], to: edition.pages[1], edition };
 }
 
 function BookCover({ edition, side, title }: { edition?: Edition; side: "front" | "back"; title: string }) {
@@ -53,7 +52,7 @@ export default async function ReaderPage({ params }: PageProps<"/read/[slug]">) 
   const { slug } = await params;
   const book = resolve(slug);
   if (!book) notFound();
-  const pages = Array.from({ length: book.to - book.from + 1 }, (_, i) => book.from + i).filter((p) => book.dir !== "reader" || !BLANK_PAGES.includes(p));
+  const pages = Array.from({ length: book.to - book.from + 1 }, (_, i) => book.from + i).filter((p) => !BLANK_PAGES.includes(p));
   const name = book.edition ? editionTitle(book.edition) : undefined;
   const hasEditorialReview = !book.edition;
 
@@ -79,7 +78,7 @@ export default async function ReaderPage({ params }: PageProps<"/read/[slug]">) 
             <Fragment key={p}>
               <figure id={`page-${p}`} className="mx-auto max-w-[760px] bg-white shadow-xl shadow-black/60">
                 <Image
-                  src={`/${book.dir}/page-${String(p).padStart(3, "0")}.jpg`}
+                  src={`/reader/page-${String(p).padStart(3, "0")}.jpg`}
                   alt={`${book.title}, page ${p}`}
                   width={900}
                   height={1345}

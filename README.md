@@ -26,8 +26,7 @@ npm run build      # writes the finished site to out/
 | Book covers (black / colour / white per edition, front and `-back`), all 600 × 750 px; the reader opens on the cover clicked (`/read/<edition>/?cover=black`) and ends on its back cover | `public/covers/` (editions with no artwork yet show a "cover coming soon" stand-in; add the three JPGs and set `hasCovers: true`) |
 | Global Edition year | `GLOBAL_EDITION_YEAR` in `src/data/shop.ts` |
 | Global Edition cover in an edition's language | add `public/covers/<edition>-global.jpg`, list the edition in `globalCoversInLanguage` in `src/data/editions.ts` |
-| Online reader pages, black and white (the Global Edition reader) | `public/reader/page-001.jpg` … `page-311.jpg` from the black and white Final Manuscript; blank print pages listed in `BLANK_PAGES` are skipped |
-| Online reader pages, colour (the soft cover readers) | `public/reader-colour/page-008.jpg` … `page-313.jpg` from the colour Final Manuscript; each edition's range is `colourPages` in `src/data/editions.ts` |
+| Online reader pages (from the Final Manuscript PDF) | `public/reader/page-001.jpg` … `page-311.jpg`; blank print pages listed in `BLANK_PAGES` are skipped |
 | Editorial Review page (text, shown in the Global Edition reader after the contents) | `src/data/editorialReview.ts` |
 | Flags | `public/flags/` |
 | Author photo and globe | `public/img/` |
