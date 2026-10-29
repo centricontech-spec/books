@@ -103,15 +103,57 @@ export const coverVariants = [
 
 export type CoverVariant = (typeof coverVariants)[number]["id"];
 
-// Global Edition (hard cover) front cover for an edition. To use a cover in the
-// edition's own language, add public/covers/<slug>-global.jpg and list the slug here.
-export const globalCoversInLanguage: string[] = [];
+// Global Edition (hard cover) covers, one pair per language: public/covers/global-<id>.jpg and global-<id>-back.jpg.
+// Each country edition shows the Global Edition in its own language.
+export const globalLanguages = [
+  { id: "english", label: "English", language: "English" },
+  { id: "maori", label: "Māori", language: "Māori" },
+  { id: "spanish", label: "Español", language: "Spanish" },
+  { id: "german", label: "Deutsch", language: "German" },
+  { id: "dutch", label: "Nederlands", language: "Dutch" },
+  { id: "french", label: "Français", language: "French" },
+  { id: "czech", label: "Čeština", language: "Czech" },
+  { id: "danish", label: "Dansk", language: "Danish" },
+  { id: "estonian", label: "Eesti", language: "Estonian" },
+  { id: "finnish", label: "Suomi", language: "Finnish" },
+  { id: "swedish", label: "Svenska", language: "Swedish" },
+  { id: "greek", label: "Ελληνικά", language: "Greek" },
+  { id: "icelandic", label: "Íslenska", language: "Icelandic" },
+  { id: "hindi", label: "हिन्दी", language: "Hindi" },
+  { id: "irish", label: "Gaeilge", language: "Irish" },
+  { id: "arabic", label: "العربية", language: "Arabic" },
+  { id: "hebrew", label: "עברית", language: "Hebrew" },
+  { id: "italian", label: "Italiano", language: "Italian" },
+  { id: "japanese", label: "日本語", language: "Japanese" },
+  { id: "lithuanian", label: "Lietuvių", language: "Lithuanian" },
+  { id: "luxembourgish", label: "Lëtzebuergesch", language: "Luxembourgish" },
+  { id: "norwegian", label: "Norsk", language: "Norwegian" },
+  { id: "portuguese", label: "Português", language: "Portuguese" },
+  { id: "scots-gaelic", label: "Gàidhlig", language: "Scots Gaelic" },
+  { id: "slovak", label: "Slovenčina", language: "Slovak" },
+  { id: "afrikaans", label: "Afrikaans", language: "Afrikaans" },
+  { id: "xhosa", label: "isiXhosa", language: "Xhosa" },
+  { id: "zulu", label: "isiZulu", language: "Zulu" },
+  { id: "korean", label: "한국어", language: "Korean" },
+  { id: "chinese", label: "中文", language: "Chinese" },
+  { id: "welsh", label: "Cymraeg", language: "Welsh" },
+  { id: "latvian", label: "Latviešu", language: "Latvian" },
+];
 
-export function globalCoverSrc(e?: Edition) {
-  return e && globalCoversInLanguage.includes(e.slug) ? `/covers/${e.slug}-global.jpg` : "/covers/global-edition.jpg";
+export const DEFAULT_GLOBAL_LANGUAGE = "english";
+
+export function isGlobalLanguage(value: string | null): value is string {
+  return globalLanguages.some((l) => l.id === value);
 }
 
-export const GLOBAL_BACK_COVER = "/covers/global-edition-back.jpg";
+// The Global Edition language for an edition, English when there is no cover in its language.
+export function globalLanguageOf(e: Edition) {
+  return globalLanguages.find((l) => l.language === e.language)?.id ?? DEFAULT_GLOBAL_LANGUAGE;
+}
+
+export function globalCoverSrc(language: string = DEFAULT_GLOBAL_LANGUAGE, side: "front" | "back" = "front") {
+  return `/covers/global-${language}${side === "back" ? "-back" : ""}.jpg`;
+}
 
 export function isCoverVariant(value: string | null): value is CoverVariant {
   return coverVariants.some((v) => v.id === value);

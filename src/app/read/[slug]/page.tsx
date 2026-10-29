@@ -7,8 +7,10 @@ import BuyButton from "@/components/BuyButton";
 import Cover from "@/components/Cover";
 import EditionCover from "@/components/EditionCover";
 import EditorialReviewPage from "@/components/EditorialReviewPage";
+import GlobalLanguagePicker from "@/components/GlobalLanguagePicker";
+import GlobalReaderCover from "@/components/GlobalReaderCover";
 import ReaderCover from "@/components/ReaderCover";
-import { editions, editionTitle, getEdition, BLANK_PAGES, GLOBAL_BACK_COVER, globalCoverSrc, MANUSCRIPT_PAGES, type Edition } from "@/data/editions";
+import { editions, editionTitle, getEdition, BLANK_PAGES, globalCoverSrc, MANUSCRIPT_PAGES, type Edition } from "@/data/editions";
 import { EDITORIAL_REVIEW } from "@/data/editorialReview";
 import { getProduct, GLOBAL_EDITION_YEAR } from "@/data/shop";
 
@@ -29,8 +31,11 @@ function resolve(slug: string) {
 
 function BookCover({ edition, side, title }: { edition?: Edition; side: "front" | "back"; title: string }) {
   if (!edition) {
-    const src = side === "front" ? globalCoverSrc() : GLOBAL_BACK_COVER;
-    return <Cover src={src} alt={`${title} ${side} cover`} priority={side === "front"} />;
+    return (
+      <Suspense fallback={<Cover src={globalCoverSrc(undefined, side)} alt={`${title} ${side} cover`} priority={side === "front"} />}>
+        <GlobalReaderCover side={side} title={title} />
+      </Suspense>
+    );
   }
   return (
     <Suspense fallback={<EditionCover edition={edition} variant="colour" side={side} />}>
@@ -109,6 +114,11 @@ export default async function ReaderPage({ params }: PageProps<"/read/[slug]">) 
           ) : null}
           <BuyButton product={getProduct("hardcover")} label={`Global Edition ${GLOBAL_EDITION_YEAR}`} className="w-full" />
           <p className="pt-2 text-center text-sm text-gold">FREE Postage</p>
+          {!book.edition && (
+            <Suspense>
+              <GlobalLanguagePicker />
+            </Suspense>
+          )}
           {!book.edition && (
             <nav className="max-h-[40vh] overflow-y-auto rounded border border-white/10 p-3 text-sm">
               <p className="mb-2 font-heading uppercase tracking-wider text-white/60">Jump to</p>

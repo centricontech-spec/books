@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: "MANA GLOBAL",
-    images: ["/covers/global-edition.jpg"],
+    images: ["/covers/global-english.jpg"],
   },
   icons: { icon: "/img/globe.png" },
 };

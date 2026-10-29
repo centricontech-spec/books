@@ -6,7 +6,7 @@ import Cover from "@/components/Cover";
 import EditionCover from "@/components/EditionCover";
 import Flag from "@/components/Flag";
 import PriceBox from "@/components/PriceBox";
-import { countries, coverSrc, coverVariants, editions, editionTitle, getEdition, globalCoverSrc } from "@/data/editions";
+import { countries, coverSrc, coverVariants, editions, editionTitle, getEdition, globalCoverSrc, globalLanguageOf } from "@/data/editions";
 import { getProduct, GLOBAL_EDITION_YEAR } from "@/data/shop";
 
 export const dynamicParams = false;
@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: PageProps<"/books/[slug]">): 
   return {
     title: `${edition.country} ${edition.language} Edition`,
     description: `MANA GLOBAL ${edition.country} edition in ${edition.language} by Robin Terry. Read it online, or order the soft cover, Global Edition hard cover, video app or e-book.`,
-    openGraph: { images: [coverSrc(edition, "colour") ?? globalCoverSrc(edition)] },
+    openGraph: { images: [coverSrc(edition, "colour") ?? globalCoverSrc(globalLanguageOf(edition))] },
   };
 }
 
@@ -71,8 +71,8 @@ export default async function EditionPage({ params }: PageProps<"/books/[slug]">
               </figure>
             ))}
             <figure className="flex flex-col">
-              <Link href="/read/global-edition/" title="Read the Global Edition online">
-                <Cover src={globalCoverSrc(edition)} alt={`MANA GLOBAL Global Edition ${GLOBAL_EDITION_YEAR} hard cover`} className="transition hover:scale-[1.03]" />
+              <Link href={`/read/global-edition/?lang=${globalLanguageOf(edition)}`} title="Read the Global Edition online">
+                <Cover src={globalCoverSrc(globalLanguageOf(edition))} alt={`MANA GLOBAL Global Edition ${GLOBAL_EDITION_YEAR} hard cover`} className="transition hover:scale-[1.03]" />
               </Link>
               <figcaption className="mt-3 flex flex-1 flex-col gap-2 text-center">
                 <span className="font-heading text-sm uppercase tracking-wide">Global Edition {GLOBAL_EDITION_YEAR} · Hard cover</span>
